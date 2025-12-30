@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
+#pragma pack(1)
 struct s1 {
   uint16_t var1;
   uint8_t var3;
