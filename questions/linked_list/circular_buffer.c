@@ -31,7 +31,7 @@ void circular_buffer_init(struct circular_buffer* buffer)
 
 int circular_buffer_write(struct circular_buffer* buffer, void* element)
 {
-    if( buffer->element_count && ( buffer->read_index == buffer->write_index ) )
+    if( ( buffer->element_count >= buffer->buffer_size ) && ( buffer->read_index == buffer->write_index ) )
     {
         buffer->status = CIRCULAR_BUFFER_OVERFLOW;
         return CIRCULAR_BUFFER_OVERFLOW;
@@ -39,7 +39,7 @@ int circular_buffer_write(struct circular_buffer* buffer, void* element)
 
     memcpy( ((uint8_t*)buffer->buffer) + (buffer->write_index*(int)buffer->element_size),  \
             (uint8_t*)element,                                                             \
-            (uint8_t)buffer->buffer_size );
+            buffer->element_size );
     
     buffer->write_index++;
 
@@ -54,21 +54,53 @@ int circular_buffer_write(struct circular_buffer* buffer, void* element)
     return CIRCULAR_BUFFER_OK;
 }
 
-#define CIRCULAR_BUFFER_PRINT_INFO(_buffer,type)                                     \
+int circular_buffer_read(struct circular_buffer* buffer, void* element)
+{
+    if( buffer->element_count == 0 )
+    {
+        buffer->status = CIRCULAR_BUFFER_UNDERFLOW;
+        return CIRCULAR_BUFFER_UNDERFLOW;
+    }
+
+    memcpy( (uint8_t*)element,\
+            ((uint8_t*)buffer->buffer) + (buffer->read_index*(int)buffer->element_size),\
+            buffer->element_size );
+    
+    buffer->read_index++;
+    buffer->element_count--;
+
+    if( buffer->read_index >= buffer->buffer_size )
+    {
+        buffer->read_index = 0;
+    }
+
+    buffer->status = CIRCULAR_BUFFER_OK;
+    return CIRCULAR_BUFFER_OK;
+}
+
+#define CIRCULAR_BUFFER_STATUS_STRING(x)                                            \
+    (x == 0) ? "OK" : ( ( x == 1) ? "OVEFLOW" : "UNDERFLOW" )
+
+#define CIRCULAR_BUFFER_PRINT_INFO(_buffer,type)                                    \
 {                                                                                   \
     int index;                                                                      \
                                                                                     \
     printf("\n\nCircular buffer contents:\n\n");                                    \
                                                                                     \
-    for( index = 0 ; index < _buffer.element_count ; index++ )                      \
+    for( index = 0 ; index < _buffer.buffer_size ; index++ )                        \
     {                                                                               \
         printf("Element [%d] = %d\n", index, ((type*)_buffer.buffer)[index]);       \
     }                                                                               \
                                                                                     \
-    printf("\n\n");                                                                 \
+    printf("Circular buffer read index: %d\n", _buffer.read_index);                  \
+    printf("Circular buffer write index: %d\n", _buffer.write_index);                \
+    printf("Circular buffer status: %s\n", CIRCULAR_BUFFER_STATUS_STRING(_buffer.status) );            \
+    printf("Circular buffer size: %d\n", _buffer.buffer_size);                                         \
+    printf("Circular buffer element size: %d\n", _buffer.element_size);                 \
+    printf("\n\n");                                                                                    \
 }
 
-static uint8_t buffer[16];
+static uint8_t buffer[8];
 
 int main(void)
 {
@@ -80,16 +112,33 @@ int main(void)
     };
 
     static uint8_t element = 1;
+    int index = 0;
 
     circular_buffer_init(&circular_buffer);
 
-    element = 10;
-    circular_buffer_write(&circular_buffer, &element);
-
-    element = 20;
-    circular_buffer_write(&circular_buffer, &element);
+    for( index = 0 ; index < 5 ; index++ )
+    {
+        element = (2*index*index) + (10*index) + 5;
+        circular_buffer_write(&circular_buffer, &element);
+    }
 
     CIRCULAR_BUFFER_PRINT_INFO(circular_buffer,uint8_t);
-    
+
+    for( index = 0 ; index < 3 ; index++ )
+    {
+        circular_buffer_read( &circular_buffer, &element );
+    }
+
+    CIRCULAR_BUFFER_PRINT_INFO(circular_buffer, uint8_t);
+
+    for( index = 0 ; index < 1 ; index++ )
+    {
+        element = 1;
+
+        circular_buffer_write(&circular_buffer, &element);
+    }
+
+    CIRCULAR_BUFFER_PRINT_INFO(circular_buffer, uint8_t);
+
     return 0;
 }
