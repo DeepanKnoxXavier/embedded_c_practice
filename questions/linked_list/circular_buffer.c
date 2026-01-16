@@ -29,6 +29,14 @@ void circular_buffer_init(struct circular_buffer* buffer)
     buffer->write_index = 0;
 }
 
+//
+// Explain what this function does
+//
+//
+//
+//
+//
+
 int circular_buffer_write(struct circular_buffer* buffer, void* element)
 {
     if( ( buffer->element_count >= buffer->buffer_size ) && ( buffer->read_index == buffer->write_index ) )
@@ -54,6 +62,14 @@ int circular_buffer_write(struct circular_buffer* buffer, void* element)
     return CIRCULAR_BUFFER_OK;
 }
 
+//
+// Explain what this function does
+//
+//
+//
+//
+//
+
 int circular_buffer_read(struct circular_buffer* buffer, void* element)
 {
     if( buffer->element_count == 0 )
@@ -78,8 +94,24 @@ int circular_buffer_read(struct circular_buffer* buffer, void* element)
     return CIRCULAR_BUFFER_OK;
 }
 
+//
+// Explain what this function does
+//
+//
+//
+//
+//
+
 #define CIRCULAR_BUFFER_STATUS_STRING(x)                                            \
     (x == 0) ? "OK" : ( ( x == 1) ? "OVEFLOW" : "UNDERFLOW" )
+
+//
+// Explain what this function does
+//
+//
+//
+//
+//
 
 #define CIRCULAR_BUFFER_PRINT_INFO(_buffer,type)                                    \
 {                                                                                   \
