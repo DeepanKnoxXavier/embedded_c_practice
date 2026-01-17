@@ -165,7 +165,7 @@ int main(void)
 
     for( index = 0 ; index < 12 ; index++ )
     {
-        task_scheduler_execute(&scheduler);
+        (void)task_scheduler_execute(&scheduler);
     }
 
     return 0;
