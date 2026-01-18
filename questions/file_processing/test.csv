@@ -1,0 +1,10 @@
+Serial number,Device Number,Register Number,Parameter Name,Bitfield start bit,Bitfield length,Parameter datatype
+1,0,0,LED_1_STATE,0,1,bool
+1,0,0,LED_2_STATE,1,1,bool
+1,0,0,LED_3_STATE,2,1,bool
+1,0,0,LED_4_STATE,3,1,bool
+1,0,0,LED_1_COMMAND,4,2,uint
+1,0,0,LED_2_COMMAND,6,2,uint
+1,0,0,LED_3_COMMAND,8,2,uint
+1,0,0,LED_4_COMMAND,10,12,uint
+1,0,0,LED_BLINK_INTERVAL_MS,12,16,uint
