@@ -1,8 +1,7 @@
 
 #include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 //
 // Explain what this macro does.
@@ -23,7 +22,8 @@
 //
 //
 
-FILE* file;
+FILE* readFile;
+FILE* writeFile;
 
 char line[1024];
 
@@ -135,34 +135,59 @@ void parse_parameter_record(struct parameter_record* record, char* line)
     }
 }
 
-struct parameter_record record[256];
-
-//
-// Explain the use of the file operation functions such as
-// fgets, fopen and fclose over here.
-//
-// Your answer and explanation:
-//
-//
-//
-//
+struct parameter_record record;
 
 int main(void)
 {
-    file = fopen("test.csv", "r");
+    readFile = fopen("test.csv", "r");
+    writeFile = fopen("test.h", "w");
 
-    fgets(line, 1024, file);
+    fgets(line, 1024, readFile);
    
+    fprintf(writeFile, "#ifndef TEST_H \n");
+    fprintf(writeFile, "#define TEST_H\n\n");
+
     int index = 0;
 
-    while( fgets(line, 1024, file) ) 
+    while( fgets(line, 1024, readFile) ) 
     {
-        parse_parameter_record( &record[index], line );
-        print_parameter_record(&record[index]);
+        parse_parameter_record( &record, line );
+        print_parameter_record(&record);
+
+        fprintf(writeFile, "\n");
+
+        fprintf(writeFile, "#define %s_PARAMETER_NAME \t \"%s\"\n", \
+                record.parameter_name, record.parameter_name);
+
+        fprintf(writeFile, "#define %s_DEVICE_NUMBER \t %d\n", \
+                record.parameter_name, record.device_number);
+
+        fprintf(writeFile, "#define %s_REGISTER_NUMBER \t %d\n", \
+                record.parameter_name, record.register_number);
+
+        fprintf(writeFile, "#define %s_START_BIT \t %d\n", \
+                record.parameter_name, record.start_bit);
+
+        fprintf(writeFile, "#define %s_BITFIELD_LENGTH \t %d\n", \
+                record.parameter_name, record.bitfield_length);
+
+        fprintf(writeFile, "#define %s_DATATYPE \t %d\n", \
+                record.parameter_name, record.datatype);
+
+        fprintf(writeFile, "#define %s_DATATYPE_STRING \t \"%s\"\n", \
+                record.parameter_name, PARAMETER_DATATYPE_STRING(record.datatype));
+
+        fprintf(writeFile, "\n");
+
         index++;
     }
 
-    fclose(file);
+    fprintf(writeFile, "#endif /* TEST_H */\n\n");
+
+    fclose(readFile);
+    fclose(writeFile);
+
+
 
     return 0;
 }
